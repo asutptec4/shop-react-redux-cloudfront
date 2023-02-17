@@ -69,3 +69,11 @@ Combination of `cloudfront:setup` and `cloudfront:build:deploy` commands with or
 ### `serverless:remove`
 
 Remove an entire stack configured in `serverless.yml` via CloudFormation.
+
+### Task2
+
+# Bucket
+https://game-shop-react.s3.eu-west-1.amazonaws.com/index.html
+
+# CloudFront
+https://d34nzg498js0a9.cloudfront.net/
