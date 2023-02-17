@@ -6,8 +6,7 @@ provider:
   name: aws
   runtime: nodejs14.x
   region: eu-west-1
-  # setup profile for AWS CLI.
-  # profile: node-aws
+  profile: default
 
 plugins:
   - serverless-finch
@@ -19,7 +18,7 @@ plugins:
 
 custom:
   client:
-    bucketName: my-store-app
+    bucketName: game-shop-react
     distributionFolder: dist
   s3BucketName: ${self:custom.client.bucketName}
 
@@ -27,7 +26,7 @@ custom:
   s3LocalPath: ${self:custom.client.distributionFolder}/
   serverless-s3-cleaner:
     buckets:
-      - ${self:custom.client.bucketName}
+      - ${self:custom.s3BucketName}
 
 resources:
   Resources:
@@ -43,7 +42,18 @@ resources:
         # VersioningConfiguration:
         #   Status: Enabled
 
-    ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
+    ## Specifying Origin Access Control
+    CloudFrontOriginAccessControl:
+      Type: AWS::CloudFront::OriginAccessControl
+      Properties: 
+        OriginAccessControlConfig:
+          Name: !Ref AWS::StackName
+          Description: Access Control between CloudFront and S3 bucket
+          OriginAccessControlOriginType: s3
+          SigningBehavior: always
+          SigningProtocol: sigv4
+
+    ## Specifying the policies to make sure all files inside the Bucket are available to CloudFront
     WebAppS3BucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:
@@ -51,22 +61,15 @@ resources:
           Ref: WebAppS3Bucket
         PolicyDocument:
           Statement:
-            - Sid: "AllowCloudFrontAccessIdentity"
+            - Sid: "AllowCloudFrontServicePrincipalReadOnly"
               Effect: Allow
               Action: s3:GetObject
               Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
               Principal:
-                AWS:
-                  Fn::Join:
-                    - " "
-                    - - "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity"
-                      - !Ref OriginAccessIdentity
-
-    OriginAccessIdentity:
-      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-      Properties:
-        CloudFrontOriginAccessIdentityConfig:
-          Comment: Access identity between CloudFront and S3 bucket
+                Service: cloudfront.amazonaws.com
+              Condition:
+                StringEquals:
+                  AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebAppCloudFrontDistribution}
 
     ## Specifying the CloudFront Distribution to server your Web Application
     WebAppCloudFrontDistribution:
@@ -78,8 +81,9 @@ resources:
               ## An identifier for the origin which must be unique within the distribution
               Id: myS3Origin
               ## In case you don't want to restrict the bucket access use CustomOriginConfig and remove S3OriginConfig
+              OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
               S3OriginConfig:
-                OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${OriginAccessIdentity}
+                OriginAccessIdentity: ''
               # CustomOriginConfig:
               #   HTTPPort: 80
               #   HTTPSPort: 443
