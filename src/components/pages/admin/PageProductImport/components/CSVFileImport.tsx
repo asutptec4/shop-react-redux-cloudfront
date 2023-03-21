@@ -1,7 +1,8 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import useNotification from "~/components/NotificationProvider/useNotification";
 
 type CSVFileImportProps = {
   url: string;
@@ -10,6 +11,8 @@ type CSVFileImportProps = {
 
 export default function CSVFileImport({ url, title }: CSVFileImportProps) {
   const [file, setFile] = React.useState<File>();
+
+  const { setNotification } = useNotification();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -29,20 +32,33 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
     if (file) {
       // Get the presigned URL
       console.log("File to upload: ", file.name);
-      const response = await axios({
-        method: "GET",
-        url,
-        params: {
-          fileName: encodeURIComponent(file.name),
-        },
-      });
-      console.log("Uploading to: ", response.data);
-      const result = await fetch(response.data, {
-        method: "PUT",
-        body: file,
-      });
-      console.log("Result: ", result);
-      setFile(undefined);
+      try {
+        const response = await axios({
+          method: "GET",
+          url,
+          headers: {
+            Authorization: `Basic ${localStorage.getItem(
+              "authorization_token"
+            )}`,
+          },
+          params: {
+            fileName: encodeURIComponent(file.name),
+          },
+        });
+        console.log("Uploading to: ", response.data);
+        const result = await fetch(response.data, {
+          method: "PUT",
+          body: file,
+        });
+        console.log("Result: ", result);
+        setFile(undefined);
+      } catch (e: unknown) {
+        setNotification({
+          isOpen: true,
+          message: (e as AxiosError).message,
+          type: "error",
+        });
+      }
     }
   };
   return (
