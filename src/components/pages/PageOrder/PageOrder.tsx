@@ -35,17 +35,26 @@ export default function PageOrder() {
     {
       queryKey: ["order", { id }],
       queryFn: async () => {
-        const res = await axios.get<Order>(`${API_PATHS.order}/order/${id}`);
-        return res.data;
+        const res = await axios.get<{ result: Order }>(
+          `${API_PATHS.order}/order/${id}`,
+          {
+            headers: {
+              Authorization: `Basic ${localStorage.getItem(
+                "authorization_token"
+              )}`,
+            },
+          }
+        );
+        return res.data.result;
       },
     },
     {
       queryKey: "products",
       queryFn: async () => {
-        const res = await axios.get<AvailableProduct[]>(
-          `${API_PATHS.bff}/product/available`
+        const res = await axios.get<{ result: AvailableProduct[] }>(
+          `${API_PATHS.bff}/products`
         );
-        return res.data;
+        return res.data.result;
       },
     },
   ]);

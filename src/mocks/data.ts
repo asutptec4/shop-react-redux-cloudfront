@@ -77,8 +77,8 @@ export const orders: Order[] = [
       comment: "",
     },
     items: [
-      { productId: "7567ec4b-b10c-48c5-9345-fc73c48a80aa", count: 2 },
-      { productId: "7567ec4b-b10c-45c5-9345-fc73c48a80a1", count: 5 },
+      { productId: "7567ec4b-b10c-48c5-9345-fc73c48a80aa", count: 2, price: 1 },
+      { productId: "7567ec4b-b10c-45c5-9345-fc73c48a80a1", count: 5, price: 2 },
     ],
     statusHistory: [
       { status: OrderStatus.Open, timestamp: Date.now(), comment: "New order" },
@@ -92,7 +92,9 @@ export const orders: Order[] = [
       lastName: "Doe",
       comment: "Ship fast!",
     },
-    items: [{ productId: "7567ec4b-b10c-48c5-9345-fc73c48a80aa", count: 3 }],
+    items: [
+      { productId: "7567ec4b-b10c-48c5-9345-fc73c48a80aa", count: 3, price: 3 },
+    ],
     statusHistory: [
       {
         status: OrderStatus.Sent,
