@@ -62,6 +62,7 @@ export default function PageCart() {
       items: data.map((i) => ({
         productId: i.product.id,
         count: i.count,
+        price: i.product.price,
       })),
       address,
     };
