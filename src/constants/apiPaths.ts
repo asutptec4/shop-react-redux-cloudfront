@@ -1,9 +1,9 @@
 const API_PATHS = {
-  product: "http://asutptec4-bff-api-dev.eu-west-1.elasticbeanstalk.com/api-proxy",
-  order: "http://asutptec4-bff-api-dev.eu-west-1.elasticbeanstalk.com/api-proxy",
-  import: "http://asutptec4-bff-api-dev.eu-west-1.elasticbeanstalk.com/api-proxy",
-  bff: "http://asutptec4-bff-api-dev.eu-west-1.elasticbeanstalk.com/api-proxy",
-  cart: "http://asutptec4-bff-api-dev.eu-west-1.elasticbeanstalk.com/api-proxy",
+  product: "https://6duetuj9ua.execute-api.eu-west-1.amazonaws.com/api-proxy",
+  order: "https://6duetuj9ua.execute-api.eu-west-1.amazonaws.com/api-proxy",
+  import: "https://6duetuj9ua.execute-api.eu-west-1.amazonaws.com/api-proxy",
+  bff: "https://6duetuj9ua.execute-api.eu-west-1.amazonaws.com/api-proxy",
+  cart: "https://6duetuj9ua.execute-api.eu-west-1.amazonaws.com/api-proxy",
 };
 
 export default API_PATHS;
